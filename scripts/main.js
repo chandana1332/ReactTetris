@@ -14,94 +14,31 @@ var myGame={
     columns:10,
     start:function()
     {
-        this.myCanvas = new Canvas(this.width, this.height, this.columns);
-        this.context = this.myCanvas.canvasDOMElement.getContext("2d");
-        this.strokeStyle = '#000';
-        this.myCanvas.renderBoard();
-        this.myCanvas.createCanvasMatrix();
-        component.renderRandomComponent(0,0);
-        this.interval = setInterval(updateComponent, 500);
+        this.canvas = new Canvas(this.width, this.height, this.columns);
+        this.context = this.canvas.getContext();
+        this.context.strokeStyle = '#000';
+        this.context.lineWidth = 5;
+        this.canvas.renderBoard();
+        this.canvas.createCanvasMatrix();
+        this.canvas.createTopMatrix();
+        component.renderRandomComponent(1,0);
+        this.interval = setInterval(periodicUpdateComponent, 1000);
+
+    },
+    saveCurrentState:function(currentComponent, i, j)
+    {
+        this.canvas.updateTop(currentComponent,i,j);
+        this.canvas.updateCanvas(currentComponent, i, j);
     }
+
 };
 
-function Canvas(width,height,columns){
-        this.width=width;
-        this.height=height;
-        this.columns=columns;
-        this.columnWidth = this.width/this.columns;
-        this.canvasDOMElement.width = this.width;
-        this.canvasDOMElement.height = this.height;
-    }
-Canvas.prototype.canvasDOMElement=document.getElementById("tetrisCanvas");
-Canvas.prototype.createCanvasMatrix=function(){
-        this.canvasMatrix=new Array(10);
-        var rows = this.height/this.columnWidth;
-        for(var i=0;i<rows;i++)
-            this.canvasMatrix.fill(new Array(this.columns).fill(0));
-        console.log(this.canvasMatrix);
-    };
-Canvas.prototype.clearCanvas=function(){
-        for(var i=0;i<this.currentColumns.length;i++)
-        {
-            this.context.clearRect(0,this.currentColumns[i]*this.columnWidth,this.columnWidth,this.top[i]*this.columnWidth);
-        }
-    };
-Canvas.prototype.renderBoard=function(){
-        var ctx = myGame.context;
-        ctx.clearRect(0, 0, this.width, this.height);
-        ctx.beginPath();
-        for(var i=1;i<=this.columns;i++)
-        {
-            ctx.moveTo(i*this.columnWidth,0);
-            ctx.lineTo(i*this.columnWidth,this.height);
-        }
-        ctx.stroke();
-    };
-
-var component = {
-    generateRandom: function(){
-        return Math.floor((Math.random() * 4) + 0);
-    },
-    components:[component1, component2, component3, component4],
-    renderRandomComponent:function(i,j){
-        this.componentNumber = this.generateRandom();
-        console.log(this.componentNumber);
-        this.i = i;
-        this.j = j;
-        this.renderComponent();
-    },
-    renderComponent:function(){
-        switch(this.componentNumber){
-            case 1:
-                component1.render(this.i, this.j);
-                break;
-            case 2:
-                component2.render(this.i, this.j);
-                break;
-            case 3:
-                component3.render(this.i, this.j);
-                break;
-            case 4:
-                component4.render(this.i, this.j);
-                break;
-            default:
-                component1.render(this.i, this.j);
-        }
-    },
-    updateComponent:function(){
-        this.j=++this.j;
-        this.renderComponent();
-    },
-    canRender:function(){
-
-    }
-};
 
 // L shaped component
 var component1 = {
     render:function(i,j){
         var ctx = myGame.context;
-        var w = myGame.columnWidth;
+        var w = myGame.canvas.columnWidth;
         ctx.beginPath();
         ctx.moveTo(i*w,j*w);
         ctx.lineTo(i*w,(3+j)*w);
@@ -110,46 +47,48 @@ var component1 = {
         ctx.lineTo((1+i)*w, (2+j)*w);
         ctx.lineTo((i+1)*w, j*w);
         ctx.closePath();
+        ctx.stroke();
         ctx.fillStyle="red";
         ctx.fill();
     },
-    componentMatrix:[[1,0],[1,0],[1,1]],
-
+    componentMatrix:[[1,1,1],[0,0,1]],
+    columns:3,
+    rows:2
 };
 
 // I shaped component
 var component2 = {
     render:function(i,j){
         var ctx = myGame.context;
-        var w = myGame.columnWidth;
+        var w = myGame.canvas.columnWidth;
+        ctx.strokeRect(i*w, j*w, w, 4*w);
         ctx.fillStyle="blue";
         ctx.fillRect(i*w, j*w, w, 4*w);
     },
-    componentMatrix:[[1],[1],[1],[1]],
-    canRender:function(){
-
-    }
+    componentMatrix:[[1,1,1,1]],
+    columns:1,
+    rows:1
 };
 
 // Square component
 var component3= {
     render:function(i,j){
         var ctx = myGame.context;
-        var w = myGame.columnWidth;
-        ctx.fillStyle="black";
+        var w = myGame.canvas.columnWidth;
+        ctx.strokeRect(i*w, j*w, 2*w, 2*w);
+        ctx.fillStyle="green";
         ctx.fillRect(i*w, j*w, 2*w, 2*w);
     },
     componentMatrix:[[1,1],[1,1]],
-    canRender:function(){
-
-    }
+    columns:2,
+    rows:2
 };
 
 // T shaped component
 var component4 = {
     render:function(i,j){
         var ctx = myGame.context;
-        var w = myGame.columnWidth;
+        var w = myGame.canvas.columnWidth;
         ctx.beginPath();
         ctx.moveTo(i*w, j*w);
         ctx.lineTo(i*w, (3+j)*w);
@@ -160,24 +99,171 @@ var component4 = {
         ctx.lineTo((1+i)*w, (1+j)*w);
         ctx.lineTo((i+1)*w, j*w);
         ctx.closePath();
+        ctx.stroke();
         ctx.fillStyle="purple";
         ctx.fill();
     },
-    componentMatrix:[[1,0],[1,1],[1,0]],
-    canRender:function(){
-
-    }
+    componentMatrix:[[1,1,1],[0,1,0]],
+    columns:3,
+    rows:2
 };
 
-
-var updateComponent = function()
-{
-    if(component.canRender()) {
-        canvas.clear();
-        component.updateComponent();
-    }
-    else
+var component = {
+    generateRandom: function(){
+        return Math.floor((Math.random() * 4) + 0);
+    },
+    components:[component1, component2, component3, component4],
+    renderRandomComponent:function(i,j){
+        this.componentNumber = this.generateRandom();
+        this.currentComponent=this.components[this.componentNumber];
+        this.i = i;
+        this.j = j;
+        this.renderComponent();
+    },
+    renderComponent:function(){
+        this.currentComponent.render(this.i, this.j);
+    },
+    updateComponent:function(i,j)
     {
-        component.renderRandomComponent(0,0);
+        myGame.canvas.clearCanvas();
+        this.i=i;
+        this.j=j;
+        this.renderComponent();
+    },
+    canRender:function(i,j){
+        var componentMatrix = this.currentComponent.componentMatrix;
+        var canvasMatrix = myGame.canvas.canvasMatrix;
+        var componentRows=this.currentComponent.rows;
+        var componentColumns=this.currentComponent.columns;
+        var canvasRows=myGame.canvas.rows;
+        var canvasColumns=myGame.canvas.columns;
+
+        if(i+componentColumns>=canvasColumns || j+componentRows>=canvasRows)
+            return false;
+        for(var x=0;x<componentRows;x++)
+        {
+            for(var y=0;y<componentColumns;y++)
+            {
+                if(componentMatrix[x][y]==1 && canvasMatrix[i+x][j+y]==1)
+                    return false;
+            }
+        }
+        return true;
     }
 };
+
+function Canvas(width,height,columns){
+    this.width=width;
+    this.height=height;
+    this.columns=columns;
+    this.columnWidth = this.width/this.columns;
+    this.rows = this.height/this.columnWidth;
+    this.canvasDOMElement.width = this.width;
+    this.canvasDOMElement.height = this.height;
+    this.context = this.canvasDOMElement.getContext("2d");
+}
+Canvas.prototype.canvasDOMElement=document.getElementById("tetrisCanvas");
+
+Canvas.prototype.createCanvasMatrix=function(){
+    this.canvasMatrix=new Array(this.columns);
+    for(var i=0;i<this.columns;i++)
+        this.canvasMatrix.fill(new Array(this.rows).fill(0));
+};
+Canvas.prototype.createTopMatrix=function(){
+    this.topMatrix=new Array(10);
+    for(var i=0;i<this.rows;i++)
+        this.topMatrix.fill(this.rows);
+};
+Canvas.prototype.clearCanvas=function(){
+    for(var i=-1;i<=component.currentComponent.columns;i++)
+    {
+        this.context.clearRect((component.i+i)*this.columnWidth,0,this.columnWidth,this.topMatrix[component.i+i]*this.columnWidth);
+    }
+};
+Canvas.prototype.renderBoard=function(){
+    var ctx = this.context;
+    ctx.rect(0, 0, this.width, this.height);
+    // ctx.beginPath();
+    // for(var i=1;i<=this.columns;i++)
+    // {
+    //     ctx.moveTo(i*this.columnWidth,0);
+    //     ctx.lineTo(i*this.columnWidth,this.height);
+    // }
+    // ctx.stroke();
+};
+Canvas.prototype.getContext=function(){
+    return this.context;
+};
+
+Canvas.prototype.updateTop=function(currentComponent,i,j){
+    for(var x=0;x<currentComponent.columns;x++)
+    {
+        for(var y=0;y<currentComponent.rows;y++)
+        {
+            if(currentComponent.componentMatrix[y][x]==1)
+            {
+                if(this.topMatrix[i+x]>j+y) {
+                    this.topMatrix[i + x] = j + y;
+                    break;
+                }
+            }
+        }
+    }
+};
+
+Canvas.prototype.updateCanvas=function(currentComponent,i,j){
+    var componentRows=currentComponent.rows;
+    var componentColumns=currentComponent.columns;
+    var componentMatrix = currentComponent.componentMatrix;
+    var canvasMatrix = this.canvasMatrix;
+    console.log(componentMatrix);
+    for(var x=0;x<componentRows;x++)
+    {
+        for(var y=0;y<componentColumns;y++)
+        {
+            if(componentMatrix[x][y]==1 ) {
+                if(canvasMatrix[i+x][j+y]==1)
+                    //throw "You are trying to save an invalid state. There is a collision.";
+                    console.log("D");
+                else
+                    canvasMatrix[i+x][j+y]=1;
+            }
+        }
+    }
+}
+
+var updateComponent=function(i,j)
+{
+    if(component.canRender(i,j)) {
+        component.updateComponent(i,j);
+        return true;
+    }
+    return false;
+};
+var periodicUpdateComponent = function(){
+
+    if(!updateComponent(component.i,component.j+1))
+    {
+        myGame.saveCurrentState(component.currentComponent,component.i,component.j);
+        component.renderRandomComponent(0,0);
+        console.log("Top::"+myGame.canvas.topMatrix);
+        console.log(myGame.canvas.canvasMatrix);
+    }
+};
+
+var moveComponent=function(event){
+    switch(event.keyCode)
+    {
+        case 37:
+            updateComponent(component.i-1,component.j);
+            break;
+        case 39:
+            updateComponent(component.i+1,component.j);
+            break;
+        case 40:
+            updateComponent(component.i,component.j+1);
+            break;
+    }
+};
+
+document.onkeydown = moveComponent;
