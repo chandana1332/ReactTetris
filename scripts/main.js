@@ -52,8 +52,8 @@ var component1 = {
         ctx.fill();
     },
     componentMatrix:[[1,1,1],[0,0,1]],
-    columns:3,
-    rows:2
+    columns:2,
+    rows:3
 };
 
 // I shaped component
@@ -67,7 +67,7 @@ var component2 = {
     },
     componentMatrix:[[1,1,1,1]],
     columns:1,
-    rows:1
+    rows:4
 };
 
 // Square component
@@ -104,8 +104,8 @@ var component4 = {
         ctx.fill();
     },
     componentMatrix:[[1,1,1],[0,1,0]],
-    columns:3,
-    rows:2
+    columns:2,
+    rows:3
 };
 
 var component = {
@@ -137,18 +137,26 @@ var component = {
         var componentColumns=this.currentComponent.columns;
         var canvasRows=myGame.canvas.rows;
         var canvasColumns=myGame.canvas.columns;
+        console.log("%%%%%%%%%%%%%%%%%%%%%%%%%");
+        console.log(componentRows);
+        console.log("i="+i+"j="+j);
 
-        if(i+componentColumns>=canvasColumns || j+componentRows>=canvasRows)
+        if(i+componentColumns>canvasColumns || j+componentRows>canvasRows)
             return false;
-        for(var x=0;x<componentRows;x++)
+        for(var x=0;x<componentColumns;x++)
         {
-            for(var y=0;y<componentColumns;y++)
+            for(var y=0;y<componentRows;y++)
             {
+                console.log("x="+x+"y="+y);
                 if(componentMatrix[x][y]==1 && canvasMatrix[i+x][j+y]==1)
                     return false;
             }
         }
         return true;
+    },
+    rotateComponent:function(){
+        var ctx = myGame.context;
+        
     }
 };
 
@@ -167,7 +175,7 @@ Canvas.prototype.canvasDOMElement=document.getElementById("tetrisCanvas");
 Canvas.prototype.createCanvasMatrix=function(){
     this.canvasMatrix=new Array(this.columns);
     for(var i=0;i<this.columns;i++)
-        this.canvasMatrix.fill(new Array(this.rows).fill(0));
+        this.canvasMatrix[i]=new Array(this.rows).fill(0);
 };
 Canvas.prototype.createTopMatrix=function(){
     this.topMatrix=new Array(10);
@@ -200,10 +208,10 @@ Canvas.prototype.updateTop=function(currentComponent,i,j){
     {
         for(var y=0;y<currentComponent.rows;y++)
         {
-            if(currentComponent.componentMatrix[y][x]==1)
+            if(currentComponent.componentMatrix[x][y]==1)
             {
-                if(this.topMatrix[i+x]>j+y) {
-                    this.topMatrix[i + x] = j + y;
+                if(this.topMatrix[i+x]>y+j) {
+                    this.topMatrix[i+x] = j+y;
                     break;
                 }
             }
@@ -216,11 +224,13 @@ Canvas.prototype.updateCanvas=function(currentComponent,i,j){
     var componentColumns=currentComponent.columns;
     var componentMatrix = currentComponent.componentMatrix;
     var canvasMatrix = this.canvasMatrix;
-    console.log(componentMatrix);
-    for(var x=0;x<componentRows;x++)
+    console.log("Before:"+myGame.canvas.canvasMatrix);
+
+    for(var x=0;x<componentColumns;x++)
     {
-        for(var y=0;y<componentColumns;y++)
+        for(var y=0;y<componentRows;y++)
         {
+            console.log("x="+x+" y="+y);
             if(componentMatrix[x][y]==1 ) {
                 if(canvasMatrix[i+x][j+y]==1)
                     //throw "You are trying to save an invalid state. There is a collision.";
@@ -230,6 +240,7 @@ Canvas.prototype.updateCanvas=function(currentComponent,i,j){
             }
         }
     }
+    console.log("After:"+canvasMatrix);
 }
 
 var updateComponent=function(i,j)
@@ -247,7 +258,6 @@ var periodicUpdateComponent = function(){
         myGame.saveCurrentState(component.currentComponent,component.i,component.j);
         component.renderRandomComponent(0,0);
         console.log("Top::"+myGame.canvas.topMatrix);
-        console.log(myGame.canvas.canvasMatrix);
     }
 };
 
@@ -263,6 +273,8 @@ var moveComponent=function(event){
         case 40:
             updateComponent(component.i,component.j+1);
             break;
+        case 38:
+            component.rotateComponent();
     }
 };
 

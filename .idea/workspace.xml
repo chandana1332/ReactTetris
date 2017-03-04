@@ -41,12 +41,33 @@
       <file leaf-file-name="main.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scripts/main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-48">
-              <caret line="218" column="9" lean-forward="false" selection-start-line="218" selection-start-column="4" selection-end-line="218" selection-end-column="9" />
+            <state relative-caret-position="492">
+              <caret line="158" column="8" lean-forward="false" selection-start-line="158" selection-start-column="8" selection-end-line="158" selection-end-column="8" />
               <folding>
                 <element signature="n#!!doc;n#start#0" expanded="false" />
               </folding>
             </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="extensions::messaging" pinned="false" current-in-tab="false">
+        <entry file="mock://extensions::messaging">
+          <provider selected="true" editor-type-id="vmFileEditor">
+            <state />
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="notifications.js" pinned="false" current-in-tab="false">
+        <entry file="mock://chrome-extension://nenlahapcbofgnanklpelkaejcehkggg/GENERATED/notifications.js">
+          <provider selected="true" editor-type-id="vmFileEditor">
+            <state />
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="content.min.js" pinned="false" current-in-tab="false">
+        <entry file="mock://chrome-extension://chhjbpecpncaggjpdakmflnfcopglcmi/js/content.min.js">
+          <provider selected="true" editor-type-id="vmFileEditor">
+            <state />
           </provider>
         </entry>
       </file>
@@ -70,6 +91,7 @@
       <find>columnWidth</find>
       <find>componen</find>
       <find>contex</find>
+      <find>conso</find>
     </findStrings>
   </component>
   <component name="IdeDocumentHistory">
@@ -78,6 +100,9 @@
         <option value="$PROJECT_DIR$/style/style.css" />
         <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/scripts/canvas.js" />
+        <option value="extensions::messaging" />
+        <option value="chrome-extension://nenlahapcbofgnanklpelkaejcehkggg/GENERATED/notifications.js" />
+        <option value="chrome-extension://chhjbpecpncaggjpdakmflnfcopglcmi/js/content.min.js" />
         <option value="$PROJECT_DIR$/scripts/main.js" />
       </list>
     </option>
@@ -256,12 +281,12 @@
       <option name="presentableId" value="Default" />
       <updated>1488242309676</updated>
       <workItem from="1488242311002" duration="5271000" />
-      <workItem from="1488319445154" duration="31188000" />
+      <workItem from="1488319445154" duration="34663000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="36459000" />
+    <option name="totallyTimeSpent" value="39934000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1280" height="800" extended-state="0" />
@@ -292,7 +317,17 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager />
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/scripts/main.js</url>
+          <line>143</line>
+          <properties />
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+      </breakpoints>
+      <option name="time" value="7" />
+    </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
@@ -348,8 +383,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/main.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-48">
-          <caret line="218" column="9" lean-forward="false" selection-start-line="218" selection-start-column="4" selection-end-line="218" selection-end-column="9" />
+        <state relative-caret-position="492">
+          <caret line="158" column="8" lean-forward="false" selection-start-line="158" selection-start-column="8" selection-end-line="158" selection-end-column="8" />
           <folding>
             <element signature="n#!!doc;n#start#0" expanded="false" />
           </folding>
