@@ -2,18 +2,16 @@
  * Created by chanprak on 2/27/17.
  */
 
-function start()
-{
+function start() {
     myGame.start();
 }
 
 
-var myGame={
-    width:500,
+var myGame = {
+    width: 500,
     height: 700,
-    columns:10,
-    start:function()
-    {
+    columns: 10,
+    start: function () {
         this.canvas = new Canvas(this.width, this.height, this.columns);
         this.context = this.canvas.getContext();
         this.context.strokeStyle = '#000';
@@ -21,13 +19,13 @@ var myGame={
         this.canvas.renderBoard();
         this.canvas.createCanvasMatrix();
         this.canvas.createTopMatrix();
-        component.renderRandomComponent(1,0);
+        // first check if you can render with this i and j. if not make it i+1
+        myComponent.renderRandomComponent(6, 0);
         this.interval = setInterval(periodicUpdateComponent, 1000);
 
     },
-    saveCurrentState:function(currentComponent, i, j)
-    {
-        this.canvas.updateTop(currentComponent,i,j);
+    saveCurrentState: function (currentComponent, i, j) {
+        this.canvas.updateTop(currentComponent, i, j);
         this.canvas.updateCanvas(currentComponent, i, j);
     }
 
@@ -36,182 +34,292 @@ var myGame={
 
 // L shaped component
 var component1 = {
-    render:function(i,j){
+    render: function (i, j, angle) {
         var ctx = myGame.context;
         var w = myGame.canvas.columnWidth;
         ctx.beginPath();
-        ctx.moveTo(i*w,j*w);
-        ctx.lineTo(i*w,(3+j)*w);
-        ctx.lineTo((2+i)*w, (3+j)*w);
-        ctx.lineTo((2+i)*w, (2+j)*w);
-        ctx.lineTo((1+i)*w, (2+j)*w);
-        ctx.lineTo((i+1)*w, j*w);
+        switch (angle) {
+            case 0:
+                ctx.moveTo(i * w, j * w);
+                ctx.lineTo(i * w, (3 + j) * w);
+                ctx.lineTo((2 + i) * w, (3 + j) * w);
+                ctx.lineTo((2 + i) * w, (2 + j) * w);
+                ctx.lineTo((1 + i) * w, (2 + j) * w);
+                ctx.lineTo((i + 1) * w, j * w);
+                break;
+            case 90:
+                ctx.moveTo(i * w, j * w);
+                ctx.lineTo(i * w, (2 + j) * w);
+                ctx.lineTo((1 + i) * w, (2 + j) * w);
+                ctx.lineTo((1 + i) * w, (1 + j) * w);
+                ctx.lineTo((3 + i) * w, (1 + j) * w);
+                ctx.lineTo((i + 3) * w, j * w);
+                this.componentMatrix = [[1, 1], [1, 0], [1, 0]];
+                break;
+            case 180:
+                ctx.moveTo(i * w, j * w);
+                ctx.lineTo(i * w, (1 + j) * w);
+                ctx.lineTo((1 + i) * w, (1 + j) * w);
+                ctx.lineTo((1 + i) * w, (3 + j) * w);
+                ctx.lineTo((2 + i) * w, (3 + j) * w);
+                ctx.lineTo((i + 2) * w, j * w);
+                this.componentMatrix = [[1, 0, 0], [1, 1, 1]];
+                break;
+            case 270:
+                ctx.moveTo(i * w, (j + 1) * w);
+                ctx.lineTo(i * w, (2 + j) * w);
+                ctx.lineTo((3 + i) * w, (2 + j) * w);
+                ctx.lineTo((3 + i) * w, j * w);
+                ctx.lineTo((2 + i) * w, j * w);
+                ctx.lineTo((i + 2) * w, (j + 1) * w);
+                this.componentMatrix = [[0, 1], [0, 1], [1, 1]];
+                break;
+
+        }
+
+        this.setDimensions(this.componentMatrix);
         ctx.closePath();
         ctx.stroke();
-        ctx.fillStyle="red";
+        ctx.fillStyle = "red";
         ctx.fill();
     },
-    componentMatrix:[[1,1,1],[0,0,1]],
-    columns:2,
-    rows:3
+    componentMatrix: [[1, 1, 1], [0, 0, 1]]
 };
 
 // I shaped component
 var component2 = {
-    render:function(i,j){
+    render: function (i, j, angle) {
         var ctx = myGame.context;
         var w = myGame.canvas.columnWidth;
-        ctx.strokeRect(i*w, j*w, w, 4*w);
-        ctx.fillStyle="blue";
-        ctx.fillRect(i*w, j*w, w, 4*w);
+        ctx.fillStyle = "blue";
+
+        switch (angle) {
+            case 0:
+            case 180:
+                ctx.strokeRect(i * w, j * w, w, 4 * w);
+                ctx.fillRect(i * w, j * w, w, 4 * w);
+                break;
+            case 90:
+            case 270:
+                ctx.strokeRect(i * w, j * w, 4 * w, w);
+                ctx.fillRect(i * w, j * w, 4 * w, w);
+                this.componentMatrix = [[1], [1], [1], [1]];
+                break;
+        }
+        this.setDimensions(this.componentMatrix);
     },
-    componentMatrix:[[1,1,1,1]],
-    columns:1,
-    rows:4
+    componentMatrix: [[1, 1, 1, 1]]
 };
 
 // Square component
-var component3= {
-    render:function(i,j){
+var component3 = {
+    render: function (i, j, angle) {
         var ctx = myGame.context;
         var w = myGame.canvas.columnWidth;
-        ctx.strokeRect(i*w, j*w, 2*w, 2*w);
-        ctx.fillStyle="green";
-        ctx.fillRect(i*w, j*w, 2*w, 2*w);
+        ctx.strokeRect(i * w, j * w, 2 * w, 2 * w);
+        ctx.fillStyle = "green";
+        ctx.fillRect(i * w, j * w, 2 * w, 2 * w);
     },
-    componentMatrix:[[1,1],[1,1]],
-    columns:2,
-    rows:2
+    componentMatrix: [[1, 1], [1, 1]]
 };
 
 // T shaped component
 var component4 = {
-    render:function(i,j){
+    render: function (i, j, angle) {
         var ctx = myGame.context;
         var w = myGame.canvas.columnWidth;
         ctx.beginPath();
-        ctx.moveTo(i*w, j*w);
-        ctx.lineTo(i*w, (3+j)*w);
-        ctx.lineTo((1+i)*w, (3+j)*w);
-        ctx.lineTo((1+i)*w, (2+j)*w);
-        ctx.lineTo((2+i)*w, (2+j)*w);
-        ctx.lineTo((i+2)*w, (j+1)*w);
-        ctx.lineTo((1+i)*w, (1+j)*w);
-        ctx.lineTo((i+1)*w, j*w);
+
+        // draw based on the angle
+        switch (angle) {
+            case 0:
+                ctx.moveTo(i * w, j * w);
+                ctx.lineTo(i * w, (3 + j) * w);
+                ctx.lineTo((1 + i) * w, (3 + j) * w);
+                ctx.lineTo((1 + i) * w, (2 + j) * w);
+                ctx.lineTo((2 + i) * w, (2 + j) * w);
+                ctx.lineTo((i + 2) * w, (j + 1) * w);
+                ctx.lineTo((1 + i) * w, (1 + j) * w);
+                ctx.lineTo((i + 1) * w, j * w);
+                break;
+            case 90:
+                ctx.moveTo(i * w, j * w);
+                ctx.lineTo(i * w, (1 + j) * w);
+                ctx.lineTo((1 + i) * w, (1 + j) * w);
+                ctx.lineTo((1 + i) * w, (2 + j) * w);
+                ctx.lineTo((2 + i) * w, (2 + j) * w);
+                ctx.lineTo((i + 2) * w, (j + 1) * w);
+                ctx.lineTo((3 + i) * w, (1 + j) * w);
+                ctx.lineTo((i + 3) * w, j * w);
+                this.componentMatrix = [[1, 0], [1, 1], [1, 0]];
+                break;
+            case 180:
+                ctx.moveTo(i * w, (j + 1) * w);
+                ctx.lineTo(i * w, (j + 2) * w);
+                ctx.lineTo((1 + i) * w, (2 + j) * w);
+                ctx.lineTo((1 + i) * w, (3 + j) * w);
+                ctx.lineTo((2 + i) * w, (3 + j) * w);
+                ctx.lineTo((i + 2) * w, j * w);
+                ctx.lineTo((1 + i) * w, j * w);
+                ctx.lineTo((i + 1) * w, (j + 1) * w);
+                this.componentMatrix = [[0, 1, 0], [1, 1, 1]];
+                break;
+            case 270:
+                ctx.moveTo(i * w, (j + 1) * w);
+                ctx.lineTo(i * w, (j + 2) * w);
+                ctx.lineTo((3 + i) * w, (2 + j) * w);
+                ctx.lineTo((3 + i) * w, (1 + j) * w);
+                ctx.lineTo((2 + i) * w, (1 + j) * w);
+                ctx.lineTo((i + 2) * w, j * w);
+                ctx.lineTo((1 + i) * w, j * w);
+                ctx.lineTo((i + 1) * w, (j + 1) * w);
+                this.componentMatrix = [[0, 1], [1, 1], [0, 1]];
+                break;
+
+        }
+        this.setDimensions(this.componentMatrix);
         ctx.closePath();
         ctx.stroke();
-        ctx.fillStyle="purple";
+        ctx.fillStyle = "purple";
         ctx.fill();
     },
-    componentMatrix:[[1,1,1],[0,1,0]],
-    columns:2,
-    rows:3
+    componentMatrix: [[1, 1, 1], [0, 1, 0]]
 };
 
-var component = {
-    generateRandom: function(){
+var myComponent = {
+    i: 0,
+    j: 0,
+    angle: 0,
+    generateRandom: function () {
         return Math.floor((Math.random() * 4) + 0);
     },
-    components:[component1, component2, component3, component4],
-    renderRandomComponent:function(i,j){
-        this.componentNumber = this.generateRandom();
-        this.currentComponent=this.components[this.componentNumber];
+    renderRandomComponent: function (i, j) {
+        this.componentNumber = 1;//this.generateRandom();
         this.i = i;
         this.j = j;
-        this.renderComponent();
+        this.renderComponent(this.componentNumber);
     },
-    renderComponent:function(){
-        this.currentComponent.render(this.i, this.j);
+    renderComponent: function (componentNumber) {
+        var component;
+        switch (componentNumber) {
+            case 0:
+                component = new Component(component1.componentMatrix, component1.render);
+                break;
+            case 1:
+                component = new Component(component2.componentMatrix, component2.render);
+                break;
+            case 2:
+                component = new Component(component3.componentMatrix, component3.render);
+                break;
+            case 3:
+                component = new Component(component4.componentMatrix, component4.render, component4.rotate);
+                break;
+            default:
+                component = new Component(component1.componentMatrix, component1.render);
+        }
+        component.render(this.i, this.j, this.angle);
+        this.currentComponent = component;
     },
-    updateComponent:function(i,j)
-    {
-        myGame.canvas.clearCanvas();
-        this.i=i;
-        this.j=j;
-        this.renderComponent();
+    updateComponent: function (i, j) {
+        if (this.canRender(i, j)) {
+            myGame.canvas.clearCanvas();
+            this.i = i;
+            this.j = j;
+            this.currentComponent.render(this.i, this.j, this.angle);
+            return true;
+        }
+        return false;
+
     },
-    canRender:function(i,j){
+    canRender: function (i, j) {
         var componentMatrix = this.currentComponent.componentMatrix;
         var canvasMatrix = myGame.canvas.canvasMatrix;
-        var componentRows=this.currentComponent.rows;
-        var componentColumns=this.currentComponent.columns;
-        var canvasRows=myGame.canvas.rows;
-        var canvasColumns=myGame.canvas.columns;
+        var componentRows = this.currentComponent.rows;
+        var componentColumns = this.currentComponent.columns;
+        var canvasRows = myGame.canvas.rows;
+        var canvasColumns = myGame.canvas.columns;
         console.log("%%%%%%%%%%%%%%%%%%%%%%%%%");
         console.log(componentRows);
-        console.log("i="+i+"j="+j);
+        console.log("i=" + i + "j=" + j);
 
-        if(i+componentColumns>canvasColumns || j+componentRows>canvasRows)
+        if (i + componentColumns > canvasColumns || j + componentRows > canvasRows)
             return false;
-        for(var x=0;x<componentColumns;x++)
-        {
-            for(var y=0;y<componentRows;y++)
-            {
-                console.log("x="+x+"y="+y);
-                if(componentMatrix[x][y]==1 && canvasMatrix[i+x][j+y]==1)
+        for (var x = 0; x < componentColumns; x++) {
+            for (var y = 0; y < componentRows; y++) {
+                console.log("x=" + x + "y=" + y);
+                if (componentMatrix[x][y] == 1 && canvasMatrix[i + x][j + y] == 1)
                     return false;
             }
         }
         return true;
     },
-    rotateComponent:function(){
-        var ctx = myGame.context;
-        
+    rotateComponent: function () {
+
+        if (this.angle < 270)
+            this.angle = this.angle + 90;
+        else
+            this.angle = 0;
+        this.updateComponent(this.i, this.j);
+        console.log("********&&&&&&&&&&&&"+this.currentComponent.componentMatrix);
+        //if you cant render the component then do i=i-1 if it's the last and i=i+1 if it's the first
     }
 };
 
-function Canvas(width,height,columns){
-    this.width=width;
-    this.height=height;
-    this.columns=columns;
-    this.columnWidth = this.width/this.columns;
-    this.rows = this.height/this.columnWidth;
+function Component(componentMatrix, renderFunction, rotateFunction) {
+    this.componentMatrix = componentMatrix;
+    this.render = renderFunction;
+    this.rotate = rotateFunction;
+    this.setDimensions(componentMatrix);
+    //Remember to  verify the component matrix. make sure it has the same number of rows in all columns.
+}
+
+Component.prototype.setDimensions= function(componentMatrix)
+{
+    this.rows = componentMatrix[0].length;
+    this.columns = componentMatrix.length;
+}
+function Canvas(width, height, columns) {
+    this.width = width;
+    this.height = height;
+    this.columns = columns;
+    this.columnWidth = this.width / this.columns;
+    this.rows = this.height / this.columnWidth;
     this.canvasDOMElement.width = this.width;
     this.canvasDOMElement.height = this.height;
     this.context = this.canvasDOMElement.getContext("2d");
 }
-Canvas.prototype.canvasDOMElement=document.getElementById("tetrisCanvas");
+Canvas.prototype.canvasDOMElement = document.getElementById("tetrisCanvas");
 
-Canvas.prototype.createCanvasMatrix=function(){
-    this.canvasMatrix=new Array(this.columns);
-    for(var i=0;i<this.columns;i++)
-        this.canvasMatrix[i]=new Array(this.rows).fill(0);
+Canvas.prototype.createCanvasMatrix = function () {
+    this.canvasMatrix = new Array(this.columns);
+    for (var i = 0; i < this.columns; i++)
+        this.canvasMatrix[i] = new Array(this.rows).fill(0);
 };
-Canvas.prototype.createTopMatrix=function(){
-    this.topMatrix=new Array(10);
-    for(var i=0;i<this.rows;i++)
+Canvas.prototype.createTopMatrix = function () {
+    this.topMatrix = new Array(10);
+    for (var i = 0; i < this.rows; i++)
         this.topMatrix.fill(this.rows);
 };
-Canvas.prototype.clearCanvas=function(){
-    for(var i=-1;i<=component.currentComponent.columns;i++)
-    {
-        this.context.clearRect((component.i+i)*this.columnWidth,0,this.columnWidth,this.topMatrix[component.i+i]*this.columnWidth);
+Canvas.prototype.clearCanvas = function () {
+    for (var i = 0; i <= this.columns; i++) {
+        this.context.clearRect(i * this.columnWidth, 0, this.columnWidth, this.topMatrix[i] * this.columnWidth);
     }
 };
-Canvas.prototype.renderBoard=function(){
+Canvas.prototype.renderBoard = function () {
     var ctx = this.context;
     ctx.rect(0, 0, this.width, this.height);
-    // ctx.beginPath();
-    // for(var i=1;i<=this.columns;i++)
-    // {
-    //     ctx.moveTo(i*this.columnWidth,0);
-    //     ctx.lineTo(i*this.columnWidth,this.height);
-    // }
-    // ctx.stroke();
+
 };
-Canvas.prototype.getContext=function(){
+Canvas.prototype.getContext = function () {
     return this.context;
 };
 
-Canvas.prototype.updateTop=function(currentComponent,i,j){
-    for(var x=0;x<currentComponent.columns;x++)
-    {
-        for(var y=0;y<currentComponent.rows;y++)
-        {
-            if(currentComponent.componentMatrix[x][y]==1)
-            {
-                if(this.topMatrix[i+x]>y+j) {
-                    this.topMatrix[i+x] = j+y;
+Canvas.prototype.updateTop = function (currentComponent, i, j) {
+    for (var x = 0; x < currentComponent.columns; x++) {
+        for (var y = 0; y < currentComponent.rows; y++) {
+            if (currentComponent.componentMatrix[x][y] == 1) {
+                if (this.topMatrix[i + x] > y + j) {
+                    this.topMatrix[i + x] = j + y;
                     break;
                 }
             }
@@ -219,63 +327,55 @@ Canvas.prototype.updateTop=function(currentComponent,i,j){
     }
 };
 
-Canvas.prototype.updateCanvas=function(currentComponent,i,j){
-    var componentRows=currentComponent.rows;
-    var componentColumns=currentComponent.columns;
+Canvas.prototype.updateCanvas = function (currentComponent, i, j) {
+    var componentRows = currentComponent.rows;
+    var componentColumns = currentComponent.columns;
     var componentMatrix = currentComponent.componentMatrix;
     var canvasMatrix = this.canvasMatrix;
-    console.log("Before:"+myGame.canvas.canvasMatrix);
+    console.log(myComponent.currentComponent.componentMatrix);
+    console.log("Before:" + myGame.canvas.canvasMatrix);
 
-    for(var x=0;x<componentColumns;x++)
-    {
-        for(var y=0;y<componentRows;y++)
-        {
-            console.log("x="+x+" y="+y);
-            if(componentMatrix[x][y]==1 ) {
-                if(canvasMatrix[i+x][j+y]==1)
-                    //throw "You are trying to save an invalid state. There is a collision.";
+    for (var x = 0; x < componentColumns; x++) {
+        for (var y = 0; y < componentRows; y++) {
+            console.log("x=" + x + " y=" + y);
+            if (componentMatrix[x][y] == 1) {
+                if (canvasMatrix[i + x][j + y] == 1)
+                //throw "You are trying to save an invalid state. There is a collision.";
                     console.log("D");
                 else
-                    canvasMatrix[i+x][j+y]=1;
+                    canvasMatrix[i + x][j + y] = 1;
             }
         }
     }
-    console.log("After:"+canvasMatrix);
-}
-
-var updateComponent=function(i,j)
-{
-    if(component.canRender(i,j)) {
-        component.updateComponent(i,j);
-        return true;
-    }
-    return false;
+    console.log("After:" + canvasMatrix);
 };
-var periodicUpdateComponent = function(){
 
-    if(!updateComponent(component.i,component.j+1))
-    {
-        myGame.saveCurrentState(component.currentComponent,component.i,component.j);
-        component.renderRandomComponent(0,0);
-        console.log("Top::"+myGame.canvas.topMatrix);
+var periodicUpdateComponent = function () {
+
+    if (!myComponent.updateComponent(myComponent.i, myComponent.j + 1)) {
+        myGame.saveCurrentState(myComponent.currentComponent, myComponent.i, myComponent.j);
+        myComponent.renderRandomComponent(6, 0);
+        console.log("Top::" + myGame.canvas.topMatrix);
     }
 };
 
-var moveComponent=function(event){
-    switch(event.keyCode)
-    {
+var moveComponent = function (event) {
+    switch (event.keyCode) {
         case 37:
-            updateComponent(component.i-1,component.j);
+            myComponent.updateComponent(myComponent.i - 1, myComponent.j);
             break;
         case 39:
-            updateComponent(component.i+1,component.j);
+            myComponent.updateComponent(myComponent.i + 1, myComponent.j);
             break;
         case 40:
-            updateComponent(component.i,component.j+1);
+            myComponent.updateComponent(myComponent.i, myComponent.j + 1);
             break;
         case 38:
-            component.rotateComponent();
+            myComponent.rotateComponent();
     }
 };
 
 document.onkeydown = moveComponent;
+
+// make myComponent a part of myGame and nothing should access myComponent directly outside the context of myGame
+// make periodicUpdate a part of myGame
