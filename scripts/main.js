@@ -46,6 +46,7 @@ var component1 = {
                 ctx.lineTo((2 + i) * w, (2 + j) * w);
                 ctx.lineTo((1 + i) * w, (2 + j) * w);
                 ctx.lineTo((i + 1) * w, j * w);
+                this.componentMatrix = [[1, 1, 1], [0, 0, 1]];
                 break;
             case 90:
                 ctx.moveTo(i * w, j * w);
@@ -83,7 +84,8 @@ var component1 = {
         ctx.fillStyle = "red";
         ctx.fill();
     },
-    componentMatrix: [[1, 1, 1], [0, 0, 1]]
+    componentMatrix : [[1, 1, 1], [0, 0, 1]]
+
 };
 
 // I shaped component
@@ -98,6 +100,8 @@ var component2 = {
             case 180:
                 ctx.strokeRect(i * w, j * w, w, 4 * w);
                 ctx.fillRect(i * w, j * w, w, 4 * w);
+                this.componentMatrix = [[1, 1, 1, 1]];
+
                 break;
             case 90:
             case 270:
@@ -108,7 +112,7 @@ var component2 = {
         }
         this.setDimensions(this.componentMatrix);
     },
-    componentMatrix: [[1, 1, 1, 1]]
+    componentMatrix:[[1, 1, 1, 1]]
 };
 
 // Square component
@@ -141,6 +145,8 @@ var component4 = {
                 ctx.lineTo((i + 2) * w, (j + 1) * w);
                 ctx.lineTo((1 + i) * w, (1 + j) * w);
                 ctx.lineTo((i + 1) * w, j * w);
+                this.componentMatrix = [[1, 1, 1], [0, 1, 0]];
+
                 break;
             case 90:
                 ctx.moveTo(i * w, j * w);

@@ -41,8 +41,8 @@
       <file leaf-file-name="main.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scripts/main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="405">
-              <caret line="96" column="19" lean-forward="true" selection-start-line="96" selection-start-column="19" selection-end-line="96" selection-end-column="19" />
+            <state relative-caret-position="252">
+              <caret line="86" column="44" lean-forward="false" selection-start-line="86" selection-start-column="44" selection-end-line="86" selection-end-column="44" />
               <folding>
                 <element signature="n#!!doc;n#start#0" expanded="false" />
               </folding>
@@ -302,12 +302,12 @@
       <option name="presentableId" value="Default" />
       <updated>1488242309676</updated>
       <workItem from="1488242311002" duration="5271000" />
-      <workItem from="1488319445154" duration="45732000" />
+      <workItem from="1488319445154" duration="46183000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="51003000" />
+    <option name="totallyTimeSpent" value="51454000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1280" height="800" extended-state="0" />
@@ -342,7 +342,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/scripts/main.js</url>
-          <line>330</line>
+          <line>336</line>
           <properties />
           <option name="timeStamp" value="8" />
         </line-breakpoint>
@@ -404,8 +404,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/main.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="405">
-          <caret line="96" column="19" lean-forward="true" selection-start-line="96" selection-start-column="19" selection-end-line="96" selection-end-column="19" />
+        <state relative-caret-position="252">
+          <caret line="86" column="44" lean-forward="false" selection-start-line="86" selection-start-column="44" selection-end-line="86" selection-end-column="44" />
           <folding>
             <element signature="n#!!doc;n#start#0" expanded="false" />
           </folding>
