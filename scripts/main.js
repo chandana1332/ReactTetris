@@ -197,10 +197,10 @@ var myComponent = {
     j: 0,
     angle: 0,
     generateRandom: function () {
-        return Math.floor((Math.random() * 4) + 0);
+        return Math.floor((Math.random() * 5) + 1);
     },
     renderRandomComponent: function (i, j) {
-        this.componentNumber = 1;//this.generateRandom();
+        this.componentNumber = this.generateRandom();
         this.i = i;
         this.j = j;
         this.renderComponent(this.componentNumber);
@@ -208,16 +208,16 @@ var myComponent = {
     renderComponent: function (componentNumber) {
         var component;
         switch (componentNumber) {
-            case 0:
+            case 1:
                 component = new Component(component1.componentMatrix, component1.render);
                 break;
-            case 1:
+            case 2:
                 component = new Component(component2.componentMatrix, component2.render);
                 break;
-            case 2:
+            case 3:
                 component = new Component(component3.componentMatrix, component3.render);
                 break;
-            case 3:
+            case 4:
                 component = new Component(component4.componentMatrix, component4.render, component4.rotate);
                 break;
             default:
@@ -253,7 +253,7 @@ var myComponent = {
         for (var x = 0; x < componentColumns; x++) {
             for (var y = 0; y < componentRows; y++) {
                 console.log("x=" + x + "y=" + y);
-                if (componentMatrix[x][y] == 1 && canvasMatrix[i + x][j + y] == 1)
+                if (componentMatrix[x][y] == 1 && canvasMatrix[i + x][j + y] > 0)
                     return false;
             }
         }
@@ -340,16 +340,16 @@ Canvas.prototype.updateCanvas = function (currentComponent, i, j) {
     var canvasMatrix = this.canvasMatrix;
     console.log(myComponent.currentComponent.componentMatrix);
     console.log("Before:" + myGame.canvas.canvasMatrix);
-
+    console.log("^^^^^^^^^^^^^^^^^"+myComponent.componentNumber);
     for (var x = 0; x < componentColumns; x++) {
         for (var y = 0; y < componentRows; y++) {
             console.log("x=" + x + " y=" + y);
             if (componentMatrix[x][y] == 1) {
-                if (canvasMatrix[i + x][j + y] == 1)
+                if (canvasMatrix[i + x][j + y] > 0)
                 //throw "You are trying to save an invalid state. There is a collision.";
                     console.log("D");
                 else
-                    canvasMatrix[i + x][j + y] = 1;
+                    canvasMatrix[i + x][j + y] = myComponent.componentNumber;
             }
         }
     }
