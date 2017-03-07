@@ -25,8 +25,11 @@ var myGame = {
 
     },
     saveCurrentState: function (currentComponent, i, j) {
+        clearInterval(this.interval)
         this.canvas.updateTop(currentComponent, i, j);
         this.canvas.updateCanvas(currentComponent, i, j);
+        this.canvas.strikeBlocks();
+        this.interval = setInterval(periodicUpdateComponent, 1000);
     }
 
 };
@@ -306,9 +309,13 @@ Canvas.prototype.createTopMatrix = function () {
     for (var i = 0; i < this.rows; i++)
         this.topMatrix.fill(this.rows);
 };
+Canvas.prototype.clearColumn=function(columnNumber)
+{
+    this.context.clearRect(columnNumber * this.columnWidth, 0, this.columnWidth, this.topMatrix[columnNumber] * this.columnWidth);
+}
 Canvas.prototype.clearCanvas = function () {
     for (var i = 0; i <= this.columns; i++) {
-        this.context.clearRect(i * this.columnWidth, 0, this.columnWidth, this.topMatrix[i] * this.columnWidth);
+        this.clearColumn(i);
     }
 };
 Canvas.prototype.renderBoard = function () {
@@ -339,7 +346,7 @@ Canvas.prototype.updateCanvas = function (currentComponent, i, j) {
     var componentMatrix = currentComponent.componentMatrix;
     var canvasMatrix = this.canvasMatrix;
     console.log(myComponent.currentComponent.componentMatrix);
-    console.log("Before:" + myGame.canvas.canvasMatrix);
+    console.log(myGame.canvas.canvasMatrix);
     console.log("^^^^^^^^^^^^^^^^^"+myComponent.componentNumber);
     for (var x = 0; x < componentColumns; x++) {
         for (var y = 0; y < componentRows; y++) {
@@ -353,9 +360,58 @@ Canvas.prototype.updateCanvas = function (currentComponent, i, j) {
             }
         }
     }
-    console.log("After:" + canvasMatrix);
+    console.log(canvasMatrix);
 };
 
+Canvas.prototype.strikeBlocks=function(){
+    var colors = ["red","blue", "green", "purple"];
+    var canvasMatrix = this.canvasMatrix;
+    var columns = this.columns;
+    var rows = this.rows;
+    var flag = true;
+    for(var x =0;x<rows;x++)
+    {
+        flag =true;
+        for(var y=0;y<columns;y++)
+        {
+            console.log("row="+x+"columns:"+y);
+            if(canvasMatrix[y][x]<=0) {
+                flag = false;
+                break;
+            }
+
+        }
+        if(flag)
+        {
+            //alert("striking");
+            // 1. move canvas matrix one row down 2. re draw
+            console.log(canvasMatrix);
+            for(var z=0;z<columns;z++)
+            {
+                this.topMatrix[z]=this.topMatrix[z]+1;
+                for(var w=x;w>=0;w--)
+                {
+                    if(w == 0) {
+                        canvasMatrix[z][w] = 0;
+                    }
+                    else {
+                        canvasMatrix[z][w] = canvasMatrix[z][w - 1];
+                        // if(canvasMatrix[z][w]!=0)
+                        // {
+                            this.clearColumn(z);
+                            this.context.fillStyle = colors[canvasMatrix[z][w]-1];
+                            this.context.fillRect(z,w,this.columnWidth,this.columnWidth);
+                        //}
+                    }
+
+
+                }
+            }
+            console.log(canvasMatrix);
+        }
+
+    }
+};
 var periodicUpdateComponent = function () {
 
     if (!myComponent.updateComponent(myComponent.i, myComponent.j + 1)) {
