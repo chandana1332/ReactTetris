@@ -11,6 +11,7 @@ var myGame = {
     width: 500,
     height: 700,
     columns: 10,
+    score: 0,
     start: function () {
         this.canvas = new Canvas(this.width, this.height, this.columns);
         this.context = this.canvas.getContext();
@@ -28,7 +29,11 @@ var myGame = {
         clearInterval(this.interval)
         this.canvas.updateTop(currentComponent, i, j);
         this.canvas.updateCanvas(currentComponent, i, j);
-        this.canvas.strikeBlocks();
+        var score = this.canvas.strikeBlocks();
+        this.score += score;
+        // if (score > 0)
+        //     alert("New score:" + this.score);
+        console.log("SCORE:" + this.score);
         this.interval = setInterval(periodicUpdateComponent, 1000);
     }
 
@@ -87,7 +92,7 @@ var component1 = {
         ctx.fillStyle = "red";
         ctx.fill();
     },
-    componentMatrix : [[1, 1, 1], [0, 0, 1]]
+    componentMatrix: [[1, 1, 1], [0, 0, 1]]
 
 };
 
@@ -115,7 +120,7 @@ var component2 = {
         }
         this.setDimensions(this.componentMatrix);
     },
-    componentMatrix:[[1, 1, 1, 1]]
+    componentMatrix: [[1, 1, 1, 1]]
 };
 
 // Square component
@@ -247,15 +252,11 @@ var myComponent = {
         var componentColumns = this.currentComponent.columns;
         var canvasRows = myGame.canvas.rows;
         var canvasColumns = myGame.canvas.columns;
-        console.log("%%%%%%%%%%%%%%%%%%%%%%%%%");
-        console.log(componentRows);
-        console.log("i=" + i + "j=" + j);
 
-        if (i + componentColumns > canvasColumns || j + componentRows > canvasRows)
+        if (i + componentColumns > canvasColumns || j + componentRows > canvasRows || i < 0)
             return false;
         for (var x = 0; x < componentColumns; x++) {
             for (var y = 0; y < componentRows; y++) {
-                console.log("x=" + x + "y=" + y);
                 if (componentMatrix[x][y] == 1 && canvasMatrix[i + x][j + y] > 0)
                     return false;
             }
@@ -269,7 +270,6 @@ var myComponent = {
         else
             this.angle = 0;
         this.updateComponent(this.i, this.j);
-        console.log("********&&&&&&&&&&&&"+this.currentComponent.componentMatrix);
         //if you cant render the component then do i=i-1 if it's the last and i=i+1 if it's the first
     }
 };
@@ -282,8 +282,7 @@ function Component(componentMatrix, renderFunction, rotateFunction) {
     //Remember to  verify the component matrix. make sure it has the same number of rows in all columns.
 }
 
-Component.prototype.setDimensions= function(componentMatrix)
-{
+Component.prototype.setDimensions = function (componentMatrix) {
     this.rows = componentMatrix[0].length;
     this.columns = componentMatrix.length;
 }
@@ -309,8 +308,7 @@ Canvas.prototype.createTopMatrix = function () {
     for (var i = 0; i < this.rows; i++)
         this.topMatrix.fill(this.rows);
 };
-Canvas.prototype.clearColumn=function(columnNumber)
-{
+Canvas.prototype.clearColumn = function (columnNumber) {
     this.context.clearRect(columnNumber * this.columnWidth, 0, this.columnWidth, this.topMatrix[columnNumber] * this.columnWidth);
 }
 Canvas.prototype.clearCanvas = function () {
@@ -345,79 +343,66 @@ Canvas.prototype.updateCanvas = function (currentComponent, i, j) {
     var componentColumns = currentComponent.columns;
     var componentMatrix = currentComponent.componentMatrix;
     var canvasMatrix = this.canvasMatrix;
-    console.log(myComponent.currentComponent.componentMatrix);
-    console.log(myGame.canvas.canvasMatrix);
-    console.log("^^^^^^^^^^^^^^^^^"+myComponent.componentNumber);
     for (var x = 0; x < componentColumns; x++) {
         for (var y = 0; y < componentRows; y++) {
-            console.log("x=" + x + " y=" + y);
             if (componentMatrix[x][y] == 1) {
                 if (canvasMatrix[i + x][j + y] > 0)
-                //throw "You are trying to save an invalid state. There is a collision.";
-                    console.log("D");
+                    throw "You are trying to save an invalid state. There is a collision.";
                 else
                     canvasMatrix[i + x][j + y] = myComponent.componentNumber;
             }
         }
     }
-    console.log(canvasMatrix);
 };
 
-Canvas.prototype.strikeBlocks=function(){
-    var colors = ["red","blue", "green", "purple"];
+Canvas.prototype.strikeBlocks = function () {
+    var colors = ["red", "blue", "green", "purple"];
     var canvasMatrix = this.canvasMatrix;
     var columns = this.columns;
     var rows = this.rows;
     var flag = true;
-    for(var x =0;x<rows;x++)
-    {
-        flag =true;
-        for(var y=0;y<columns;y++)
-        {
-            console.log("row="+x+"columns:"+y);
-            if(canvasMatrix[y][x]<=0) {
+    var score = 0;
+    for (var x = 0; x < rows; x++) {
+        flag = true;
+        for (var y = 0; y < columns; y++) {
+            if (canvasMatrix[y][x] <= 0) {
                 flag = false;
                 break;
             }
 
         }
-        if(flag)
-        {
-            //alert("striking");
+        if (flag) {
             // 1. move canvas matrix one row down 2. re draw
-            console.log(canvasMatrix);
-            for(var z=0;z<columns;z++)
-            {
-                this.topMatrix[z]=this.topMatrix[z]+1;
-                for(var w=x;w>=0;w--)
-                {
-                    if(w == 0) {
+            for (var z = 0; z < columns; z++) {
+                this.topMatrix[z] = this.topMatrix[z] + 1;
+                for (var w = x; w >= 0; w--) {
+                    if (w == 0) {
                         canvasMatrix[z][w] = 0;
                     }
                     else {
                         canvasMatrix[z][w] = canvasMatrix[z][w - 1];
                         // if(canvasMatrix[z][w]!=0)
                         // {
-                            this.clearColumn(z);
-                            this.context.fillStyle = colors[canvasMatrix[z][w]-1];
-                            this.context.fillRect(z,w,this.columnWidth,this.columnWidth);
+                        this.clearColumn(z);
+                        this.context.fillStyle = colors[canvasMatrix[z][w] - 1];
+                        this.context.fillRect(z, w, this.columnWidth, this.columnWidth);
                         //}
                     }
 
 
                 }
             }
-            console.log(canvasMatrix);
+            score = score + 10;
         }
 
     }
+    return score;
 };
 var periodicUpdateComponent = function () {
 
     if (!myComponent.updateComponent(myComponent.i, myComponent.j + 1)) {
         myGame.saveCurrentState(myComponent.currentComponent, myComponent.i, myComponent.j);
         myComponent.renderRandomComponent(6, 0);
-        console.log("Top::" + myGame.canvas.topMatrix);
     }
 };
 
@@ -439,5 +424,14 @@ var moveComponent = function (event) {
 
 document.onkeydown = moveComponent;
 
-// make myComponent a part of myGame and nothing should access myComponent directly outside the context of myGame
+// **************** This week ******************
+// Fix the rxc or cxr
+// Fix the bug with rotation and render
+// Make myComponent a part of myGame and nothing should access myComponent directly outside the context of myGame and make myGame also oo
+// Verify that components don't access anything wihtout an object.
+// Finish React course.
+// Build the side div
+
 // make periodicUpdate a part of myGame
+// Logs to record moves so that you can replay. Preferrably give the option to save it to file.
+
